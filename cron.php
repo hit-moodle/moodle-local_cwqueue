@@ -46,6 +46,8 @@ if ($raw_data) {
     $r->time = time();
     $r->current = $data[0];
     $r->last = $data[1];
-    $DB->insert_record('cwqueue_status', $r);
+    if ($r->current != 0 and $r->last != 0 and $r->last >= $r->current) {
+        $DB->insert_record('cwqueue_status', $r);
+    }
 }
 
