@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/cwqueue/db" VERSION="20111026" COMMENT="XMLDB file for Moodle local/cwqueue"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="cwqueue_status" COMMENT="财务排队各个时刻的状态">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="time"/>
+        <FIELD NAME="time" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="current"/>
+        <FIELD NAME="current" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="time" NEXT="last"/>
+        <FIELD NAME="last" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="current"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="time" UNIQUE="true" FIELDS="time"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
