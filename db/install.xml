@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/cwqueue/db" VERSION="20111026" COMMENT="XMLDB file for Moodle local/cwqueue"
+<XMLDB PATH="local/cwqueue/db" VERSION="20111123" COMMENT="XMLDB file for Moodle local/cwqueue"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -7,15 +7,26 @@
     <TABLE NAME="cwqueue_status" COMMENT="财务排队各个时刻的状态">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="time"/>
-        <FIELD NAME="time" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="current"/>
-        <FIELD NAME="current" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="time" NEXT="last"/>
+        <FIELD NAME="time" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="year"/>
+        <FIELD NAME="year" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="time" NEXT="month"/>
+        <FIELD NAME="month" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="year" NEXT="day"/>
+        <FIELD NAME="day" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="month" NEXT="dayofweek"/>
+        <FIELD NAME="dayofweek" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="day" NEXT="minutes"/>
+        <FIELD NAME="minutes" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="dayofweek" NEXT="current"/>
+        <FIELD NAME="current" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="minutes" NEXT="last"/>
         <FIELD NAME="last" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="current"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="time" UNIQUE="true" FIELDS="time"/>
+        <INDEX NAME="time" UNIQUE="true" FIELDS="time" NEXT="year"/>
+        <INDEX NAME="year" UNIQUE="false" FIELDS="year" PREVIOUS="time" NEXT="month"/>
+        <INDEX NAME="month" UNIQUE="false" FIELDS="month" PREVIOUS="year" NEXT="day"/>
+        <INDEX NAME="day" UNIQUE="false" FIELDS="day" PREVIOUS="month" NEXT="dayofweek"/>
+        <INDEX NAME="dayofweek" UNIQUE="false" FIELDS="dayofweek" PREVIOUS="day" NEXT="current"/>
+        <INDEX NAME="current" UNIQUE="false" FIELDS="current" PREVIOUS="dayofweek" NEXT="minutes"/>
+        <INDEX NAME="minutes" UNIQUE="false" FIELDS="minutes" PREVIOUS="current"/>
       </INDEXES>
     </TABLE>
   </TABLES>

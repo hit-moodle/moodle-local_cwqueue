@@ -37,16 +37,30 @@ defined('MOODLE_INTERNAL') || die();
 $CFG->debug = DEBUG_MINIMAL; // suppress debug info of download_file_content(). The source server is always down regulary
 
 require_once($CFG->libdir.'/filelib.php');
+require_once('locallib.php');
+
+if (!cwq_is_working()) {
+    die;
+}
+
 $cwc_url = 'http://cwc.hit.edu.cn/server.asp';
 
 $raw_data = download_file_content($cwc_url);
 if ($raw_data) {
     $data = explode('#', $raw_data);
-    $r = new stdClass();
-    $r->time = time();
-    $r->current = $data[0];
-    $r->last = $data[1];
-    if ($r->current != 0 and $r->last != 0 and $r->last >= $r->current) {
+    $current = $data[0];
+    $last = $data[1];
+    if ($current != 0 and $last != 0 and $last >= $current) {
+        $r = new stdClass();
+        $now = time();
+        $r->time = $now;
+        $r->year    = date('Y', $now);
+        $r->month   = date('N', $now);
+        $r->day     = date('j', $now);
+        $r->dayofweek = date('N', $now);
+        $r->minutes = cwq_vectorize_time($now);
+        $r->current = $current - BASE_NUMBER;
+        $r->last = $last - BASE_NUMBER;
         $DB->insert_record('cwqueue_status', $r);
     }
 }

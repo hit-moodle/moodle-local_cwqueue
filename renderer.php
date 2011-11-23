@@ -33,12 +33,37 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-//require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(__FILE__).'/locallib.php');
 
 /**
  * cwqueue renderer class
  */
 class local_cwqueue_renderer extends plugin_renderer_base {
 
+    function today() {
+        $output = '';
+
+        $output .= $this->current();
+
+        // 今日统计
+        $now = time();
+        if ($today = cwq_serve_statistics($now) and $lasthour = cwq_serve_statistics($now, 60)) {
+            $interval = $today->endtime - $today->starttime;
+            $hour_average = $interval ? $today->count * 60 / $interval : 0;
+            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近一小时办理了{$lasthour->count}笔。");
+        }
+
+        return $output;
+    }
+
+    function current() {
+        if ($status = cwq_current_status()) {
+            $output = $this->box("现已办理到第{$status->current}号，还有".($status->last - $status->current).'人在等待');
+        } else {
+            $output = $this->box('已停止办公');
+        }
+
+        return $output;
+    }
 }
 

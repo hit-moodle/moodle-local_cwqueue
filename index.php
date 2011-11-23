@@ -47,5 +47,7 @@ $output = $PAGE->get_renderer('local_cwqueue');
 /// Output starts here
 echo $output->header();
 
+echo $output->today();
+
 echo $output->footer();
 
