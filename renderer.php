@@ -51,7 +51,7 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         if ($today = cwq_serve_statistics($now) and $lasthour = cwq_serve_statistics($now, 60)) {
             $interval = $today->endtime - $today->starttime;
             $hour_average = round($interval ? $today->count * 60 / $interval : 0);
-            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近一小时办理了{$lasthour->count}笔");
+            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近".($lasthour->endtime-$lasthour->starttime)."分钟办理了{$lasthour->count}笔");
         }
 
         return $output;
@@ -68,12 +68,24 @@ class local_cwqueue_renderer extends plugin_renderer_base {
     }
 
     function forecast() {
+        $output = '';
+
         $form = new forecast_form();
         if ($fromform = $form->get_data()){
-
-        } else {
-            $form->display();
+            $number = $fromform->number;
+            if ($serve = cwq_forecast($number - BASE_NUMBER)) {
+                if ($serve->served) {
+                    $output .= $this->box($number.'号已经在'.date('G:i', $serve->start).'到'.date('G:i', $serve->end).'之间办理或已过号');
+                } else {
+                    $output .= $this->box_start();
+                    $output .= '预测'.$number.'号将在'.date('G:i', $serve->start).'到'.date('G:i', $serve->end).'之间办理';
+                    $output .= $this->box_end();
+                }
+            }
         }
+
+        $form->display();
+        return $output;
     }
 }
 

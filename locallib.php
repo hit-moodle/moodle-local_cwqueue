@@ -109,7 +109,25 @@ function cwq_serve_statistics($until, $back = 1440) {
     $ret->endtime = $last->minutes;
     $ret->count = $last->current - $first->current;
     $ret->new = $last->last - $first->last;
+    $ret->current = $last->current;
+    $ret->last = $last->last;
 
+    return $ret;
+}
+
+/**
+ * 预测number的服务时间
+ *
+ * @param number - 排号
+ * @param at - 发起预测动作的时刻，也是要预测的日期
+ */
+function cwq_forecast($number, $at = -1) {
+    if ($at === -1) {
+        $at = time();
+    }
+
+    $ret = last_hour_oracle::forecast_serve_time($number, $at);
+    $ret->served = false;
     return $ret;
 }
 
@@ -124,17 +142,25 @@ class oracle {
      * @param at - 发起预测动作的时刻，也是要预测的日期
      * @return object - $o->begin, 时间段起始；$o->end, 时间段结束
      */
-    static public function forecast_serve_time($number, $at = -1) {
+    static public function forecast_serve_time($number, $at) {
         return null;
-    }
-
-    static protected function validate_time(&$at) {
-        if ($at === -1) {
-            $at = time();
-        }
     }
 }
 
 class last_hour_oracle extends oracle {
 
+    static public function forecast_serve_time($number, $at) {
+        if (!$lasthour = cwq_serve_statistics($at, 60)) {
+            return null;
+        }
+        if ($lasthour->endtime == $lasthour->starttime) {  // Can not calc speed
+            return null;
+        }
+
+        $ret = new stdClass();
+        $speed = $lasthour->count / ($lasthour->endtime - $lasthour->starttime);
+        $ret->start = $ret->end = $at + ($number - $lasthour->current) * $speed;
+
+        return $ret;
+    }
 }
