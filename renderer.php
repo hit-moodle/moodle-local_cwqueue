@@ -58,10 +58,10 @@ class local_cwqueue_renderer extends plugin_renderer_base {
     }
 
     function current() {
+        $output = '';
+
         if ($status = cwq_current_status()) {
             $output = $this->box("现已办理到第{$status->current}号，还有".($status->last - $status->current).'人在等待');
-        } else {
-            $output = $this->box('已停止办公');
         }
 
         return $output;

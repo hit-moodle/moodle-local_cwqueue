@@ -47,8 +47,12 @@ $output = $PAGE->get_renderer('local_cwqueue');
 /// Output starts here
 echo $output->header();
 
-echo $output->today();
-echo $output->forecast();
+if (cwq_is_working()) {
+    echo $output->today();
+    echo $output->forecast();
+} else {
+    echo $output->box('已停止办公');
+}
 
 echo $output->footer();
 

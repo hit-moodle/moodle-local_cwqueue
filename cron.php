@@ -39,7 +39,7 @@ $CFG->debug = DEBUG_MINIMAL; // suppress debug info of download_file_content(). 
 require_once($CFG->libdir.'/filelib.php');
 require_once('locallib.php');
 
-if (!cwq_is_working()) {
+if (!cwq_is_serving()) {
     die;
 }
 

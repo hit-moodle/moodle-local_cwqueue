@@ -36,8 +36,32 @@ function cwq_is_working($time = -1) {
     }
 
     $t = date('Gi', $time);
-    return (800 <= $t and $t <= 1130) or (1330 < $t and $t <= 1630);
+    return 800 <= $t and $t <= 1630;
 }
+
+/**
+ * 是否是午休时间
+ */
+function cwq_is_breaking($time = -1) {
+    if ($time === -1) {
+        $time = time();
+    }
+
+    $t = date('Gi', $time);
+    return 1130 <= $t and $t <= 1330;
+}
+
+/**
+ * 是否是办公时间
+ */
+function cwq_is_serving($time = -1) {
+    if ($time === -1) {
+        $time = time();
+    }
+
+    return cwq_is_working($time) and !cwq_is_breaking();
+}
+
 
 /**
  * 判断$time是否是当前时间
