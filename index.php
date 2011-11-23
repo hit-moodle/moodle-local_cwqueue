@@ -48,6 +48,7 @@ $output = $PAGE->get_renderer('local_cwqueue');
 echo $output->header();
 
 echo $output->today();
+echo $output->forecast();
 
 echo $output->footer();
 

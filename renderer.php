@@ -34,6 +34,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/locallib.php');
+require_once("$CFG->libdir/formslib.php");
 
 /**
  * cwqueue renderer class
@@ -49,8 +50,8 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $now = time();
         if ($today = cwq_serve_statistics($now) and $lasthour = cwq_serve_statistics($now, 60)) {
             $interval = $today->endtime - $today->starttime;
-            $hour_average = $interval ? $today->count * 60 / $interval : 0;
-            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近一小时办理了{$lasthour->count}笔。");
+            $hour_average = round($interval ? $today->count * 60 / $interval : 0);
+            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近一小时办理了{$lasthour->count}笔");
         }
 
         return $output;
@@ -65,5 +66,32 @@ class local_cwqueue_renderer extends plugin_renderer_base {
 
         return $output;
     }
+
+    function forecast() {
+        $form = new forecast_form();
+        if ($fromform = $form->get_data()){
+
+        } else {
+            $form->display();
+        }
+    }
 }
 
+class forecast_form extends moodleform {
+	function definition() {
+        $mform =& $this->_form;
+		$mform->addElement('header', 'desc', '预测排队时间');
+		$mform->addElement('text', 'number', '号码', array('size' => 10));
+        $mform->addRule('number', '必须输入', 'required');
+        $mform->setType('number', PARAM_INT);
+        $this->add_action_buttons(false, '开始预测');
+    }
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        if ($data['number'] - BASE_NUMBER <= 0) {
+            $errors['number'] = '无效号码';
+        }
+        return $errors;
+    }
+}
