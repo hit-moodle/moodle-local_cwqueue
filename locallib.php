@@ -27,6 +27,21 @@ function cwq_vectorize_time($time) {
     return $hour * 60 + $minute;
 }
 
+function cwq_actual_time($minutes, $date = -1) {
+    if ($date === -1) {
+        $date = time();
+    }
+    $time = new DateTime();
+    $time->setTimestamp($date);
+
+    if ($minutes > 210) {
+        $minutes += 120;  // 加上午休时间
+    }
+    $time->setTime((int)($minutes / 60) + 8, $minutes % 60);
+
+    return $time->getTimestamp();
+}
+
 /**
  * 是否工作时间
  */
@@ -164,7 +179,7 @@ class oracle {
      *
      * @param number - 排号
      * @param at - 发起预测动作的时刻，也是要预测的日期
-     * @return object - $o->begin, 时间段起始；$o->end, 时间段结束
+     * @return object - $o->begin, 时间段起始时刻；$o->end, 时间段结束
      */
     static public function forecast_serve_time($number, $at) {
         return null;
@@ -183,8 +198,9 @@ class last_hour_oracle extends oracle {
 
         $ret = new stdClass();
         $speed = $lasthour->count / ($lasthour->endtime - $lasthour->starttime);
-        $ret->end = $at + ($number - $lasthour->current) / $speed * 60 + 300;
-        $ret->start = $ret->end - 600;
+        $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed * 60;
+        $ret->begin = cwq_actual_time($minutes - 5);
+        $ret->end = cwq_actual_time($minutes + 5);
 
         return $ret;
     }

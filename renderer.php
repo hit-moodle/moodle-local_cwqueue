@@ -75,10 +75,10 @@ class local_cwqueue_renderer extends plugin_renderer_base {
             $number = $fromform->number;
             if ($serve = cwq_forecast($number - BASE_NUMBER)) {
                 if ($serve->served) {
-                    $output .= $this->box($number.'号已经在'.date('G:i', $serve->start).'到'.date('G:i', $serve->end).'之间办理或已过号');
+                    $output .= $this->box($number.'号已经在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理或已过号');
                 } else {
                     $output .= $this->box_start();
-                    $output .= '预测'.$number.'号将在'.date('G:i', $serve->start).'到'.date('G:i', $serve->end).'之间办理';
+                    $output .= '预测'.$number.'号将在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理';
                     $output .= $this->box_end();
                 }
             }
