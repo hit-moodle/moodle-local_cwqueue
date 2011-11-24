@@ -90,15 +90,6 @@ function cwq_queue_is_working() {
 }
 
 /**
- * 判断$time是否是当前时间
- *
- * 当前时刻和$time相差不超过CURRENT_TIME_INTERVAL
- */
-function cwq_is_current($time) {
-    return (time() - $time) < CURRENT_TIME_INTERVAL;
-}
-
-/**
  * 返回当前排队状态
  *
  * 如果当前时间无合适状态，返回false
@@ -106,10 +97,9 @@ function cwq_is_current($time) {
 function cwq_current_status() {
     global $DB;
 
-    $rs = $DB->get_records('cwqueue_status', null, 'time DESC', '*', 0, 1);
-    $r = reset($rs);
-
-    if (cwq_is_current($r->time)) {
+    if (cwq_queue_is_working()) {
+        $rs = $DB->get_records('cwqueue_status', null, 'time DESC', '*', 0, 1);
+        $r = reset($rs);
         return $r;
     }
 
