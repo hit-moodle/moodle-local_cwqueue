@@ -99,8 +99,6 @@ function cwq_current_status() {
     $r = reset($rs);
 
     if (cwq_is_current($r->time)) {
-        $r->current += BASE_NUMBER;
-        $r->last += BASE_NUMBER;
         return $r;
     }
 
@@ -166,7 +164,10 @@ function cwq_forecast($number, $at = -1) {
     }
 
     $ret = last_hour_oracle::forecast_serve_time($number, $at);
-    $ret->served = false;
+
+    $current_status = cwq_current_status();
+    $ret->served = $number <= $current_status->current;
+
     return $ret;
 }
 

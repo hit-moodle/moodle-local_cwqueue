@@ -61,7 +61,7 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $output = '';
 
         if ($status = cwq_current_status()) {
-            $output = $this->box("现已办理到第{$status->current}号，还有".($status->last - $status->current).'人在等待');
+            $output = $this->box('现已办理到第'.($status->current + BASE_NUMBER).'号，还有'.($status->last - $status->current).'人在等待');
         }
 
         return $output;
@@ -95,7 +95,7 @@ class forecast_form extends moodleform {
         $number = $mform->getElementValue('number');
         if (!empty($number) and $serve = cwq_forecast($number - BASE_NUMBER)) {
             if ($serve->served) {
-                $result_html = $number.'号已经在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理或已过号';
+                $result_html = $number.'号已经办理或已过号';
             } else {
                 $result_html = '预测'.$number.'号将在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理';
             }
