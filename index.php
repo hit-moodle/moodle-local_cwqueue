@@ -47,7 +47,7 @@ $output = $PAGE->get_renderer('local_cwqueue');
 /// Output starts here
 echo $output->header();
 
-if (cwq_is_working()) {
+if (cwq_is_working() and cwq_queue_is_working()) {
     echo $output->today();
     echo $output->forecast();
 } else {

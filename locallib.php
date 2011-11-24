@@ -51,6 +51,7 @@ function cwq_is_working($time = -1) {
     }
 
     $t = date('Gi', $time);
+
     return 800 <= $t and $t <= 1630;
 }
 
@@ -77,6 +78,16 @@ function cwq_is_serving($time = -1) {
     return cwq_is_working($time) and !cwq_is_breaking($time);
 }
 
+/**
+ * 排队机是否在工作
+ */
+function cwq_queue_is_working() {
+    global $DB;
+
+    $select = '? - time < 7800'; // 130分钟内有数据视为在工作
+    $c = $DB->count_records_select('cwqueue_status', $select, array(time()));
+    return $c != 0;
+}
 
 /**
  * 判断$time是否是当前时间
