@@ -164,7 +164,7 @@ function cwq_forecast($number, $at = -1) {
         $at = time();
     }
 
-    $oracles = array('last_hour_oracle');
+    $oracles = array('last_hour_oracle', 'yesterday_oracle', 'last_5_days_oracle', 'last_30_days_oracle', 'weekday_in_history_oracle', 'monthday_in_history_oracle', 'today_in_history_oracle');
 
     $ret = new stdClass();
     $ret->forecasts = array();
@@ -211,6 +211,61 @@ class last_hour_oracle extends oracle {
         $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed;
         $ret->begin = cwq_actual_time($minutes - 5, $at);
         $ret->end = cwq_actual_time($minutes + 5, $at);
+
+        return $ret;
+    }
+}
+
+class yesterday_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '上一工作日';
+
+        return $ret;
+    }
+}
+
+class last_5_days_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '最近五个工作日';
+
+        return $ret;
+    }
+}
+
+class last_30_days_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '最近30个工作日';
+
+        return $ret;
+    }
+}
+
+class weekday_in_history_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '史上星期'.date('N', $at);
+
+        return $ret;
+    }
+}
+
+
+class monthday_in_history_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '史上'.date('j', $at).'日';
+
+        return $ret;
+    }
+}
+
+class today_in_history_oracle extends oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '历史上的今天';
 
         return $ret;
     }

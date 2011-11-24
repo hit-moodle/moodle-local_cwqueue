@@ -103,8 +103,9 @@ class forecast_form extends moodleform {
                 $result_html = $number.'号已经办理或已过号';
             } else {
                 $table = new html_table();
-                $table->head = array('预测方法', '预测服务时间');
+                $table->head = array('预测算法', '预测服务时间');
                 foreach ($serve->forecasts as $forecast) {
+                    $row = array();
                     $row[] = new html_table_cell($forecast->name);
                     if (!empty($forecast->begin) and !empty($forecast->end)) {
                         $row[] = date('G:i', $forecast->begin).'-'.date('G:i', $forecast->end);
