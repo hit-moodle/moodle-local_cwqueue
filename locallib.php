@@ -198,9 +198,9 @@ class last_hour_oracle extends oracle {
 
         $ret = new stdClass();
         $speed = $lasthour->count / ($lasthour->endtime - $lasthour->starttime);
-        $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed * 60;
-        $ret->begin = cwq_actual_time($minutes - 5);
-        $ret->end = cwq_actual_time($minutes + 5);
+        $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed;
+        $ret->begin = cwq_actual_time($minutes - 5, $at);
+        $ret->end = cwq_actual_time($minutes + 5, $at);
 
         return $ret;
     }
