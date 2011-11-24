@@ -71,33 +71,38 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $output = '';
 
         $form = new forecast_form();
-        if ($fromform = $form->get_data()){
-            $number = $fromform->number;
-            if ($serve = cwq_forecast($number - BASE_NUMBER)) {
-                if ($serve->served) {
-                    $output .= $this->box($number.'号已经在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理或已过号');
-                } else {
-                    $output .= $this->box_start();
-                    $output .= '预测'.$number.'号将在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理';
-                    $output .= $this->box_end();
-                }
-            }
-        }
-
-        $form->display();
+        $form->display();  // result will be displayed in the form if any
         return $output;
     }
 }
 
 class forecast_form extends moodleform {
+    protected $result_element = null;
+
 	function definition() {
         $mform =& $this->_form;
 		$mform->addElement('header', 'desc', '预测排队时间');
+        $this->result_element = $mform->addElement('html', '');  // html elements have no ids, so we must store it for further reference
 		$mform->addElement('text', 'number', '号码', array('size' => 10));
         $mform->addRule('number', '必须输入', 'required');
         $mform->setType('number', PARAM_INT);
         $this->add_action_buttons(false, '开始预测');
     }
+
+    function definition_after_data(){
+        // 如果已经有号码，显示结果
+        $mform = $this->_form;
+        $number = $mform->getElementValue('number');
+        if (!empty($number) and $serve = cwq_forecast($number - BASE_NUMBER)) {
+            if ($serve->served) {
+                $result_html = $number.'号已经在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理或已过号';
+            } else {
+                $result_html = '预测'.$number.'号将在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理';
+            }
+            $this->result_element->_text = $result_html;
+        }
+    }
+
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
