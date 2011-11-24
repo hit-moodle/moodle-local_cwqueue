@@ -74,6 +74,10 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $form->display();  // result will be displayed in the form if any
         return $output;
     }
+
+    function notice() {
+        return $this->notification('这只是一个业余兴趣项目，本站不对它造成的任何结果负有责任');
+    }
 }
 
 class forecast_form extends moodleform {

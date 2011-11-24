@@ -54,5 +54,6 @@ if (cwq_is_working()) {
     echo $output->box('已停止办公');
 }
 
+echo $output->notice();
 echo $output->footer();
 
