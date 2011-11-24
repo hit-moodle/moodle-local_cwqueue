@@ -164,7 +164,13 @@ function cwq_forecast($number, $at = -1) {
         $at = time();
     }
 
-    $ret = last_hour_oracle::forecast_serve_time($number, $at);
+    $oracles = array('last_hour_oracle');
+
+    $ret = new stdClass();
+    $ret->forecasts = array();
+    foreach ($oracles as $oracle) {
+        $ret->forecasts[] = $oracle::forecast_serve_time($number, $at);
+    }
 
     $current_status = cwq_current_status();
     $ret->served = $number <= $current_status->current;
@@ -191,14 +197,16 @@ class oracle {
 class last_hour_oracle extends oracle {
 
     static public function forecast_serve_time($number, $at) {
+        $ret = new stdClass();
+        $ret->name = '最近一小时';
+
         if (!$lasthour = cwq_serve_statistics($at, 60)) {
-            return null;
+            return $ret;
         }
         if ($lasthour->endtime == $lasthour->starttime) {  // Can not calc speed
-            return null;
+            return $ret;
         }
 
-        $ret = new stdClass();
         $speed = $lasthour->count / ($lasthour->endtime - $lasthour->starttime);
         $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed;
         $ret->begin = cwq_actual_time($minutes - 5, $at);

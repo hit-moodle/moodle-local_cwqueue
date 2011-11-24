@@ -102,7 +102,18 @@ class forecast_form extends moodleform {
             if ($serve->served) {
                 $result_html = $number.'号已经办理或已过号';
             } else {
-                $result_html = '预测'.$number.'号将在'.date('G:i', $serve->begin).'到'.date('G:i', $serve->end).'之间办理';
+                $table = new html_table();
+                $table->head = array('预测方法', '预测服务时间');
+                foreach ($serve->forecasts as $forecast) {
+                    $row[] = new html_table_cell($forecast->name);
+                    if (!empty($forecast->begin) and !empty($forecast->end)) {
+                        $row[] = date('G:i', $forecast->begin).'-'.date('G:i', $forecast->end);
+                    } else {
+                        $row[] = 'N/A';
+                    }
+                    $table->data[] = new html_table_row($row);
+                }
+                $result_html = html_writer::table($table);
             }
             $this->result_element->_text = $result_html;
         }
