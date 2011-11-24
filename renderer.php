@@ -61,7 +61,7 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $output = '';
 
         if ($status = cwq_current_status()) {
-            $output = $this->box('现已办理到第'.($status->current + BASE_NUMBER).'号，还有'.($status->last - $status->current).'人在等待');
+            $output = $this->box(get_string('early', 'assignment', format_time(time()-$status->time)).'已办理到第'.($status->current + BASE_NUMBER).'号，还有'.($status->last - $status->current).'人在等待');
         }
 
         return $output;
