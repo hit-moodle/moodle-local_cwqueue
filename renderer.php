@@ -71,6 +71,7 @@ class local_cwqueue_renderer extends plugin_renderer_base {
         $output = '';
 
         $form = new forecast_form();
+        $form->get_data(); // trigger the validation()
         $form->display();  // result will be displayed in the form if any
         return $output;
     }
@@ -97,7 +98,7 @@ class forecast_form extends moodleform {
         // 如果已经有号码，显示结果
         $mform = $this->_form;
         $number = $mform->getElementValue('number');
-        if (!empty($number) and $serve = cwq_forecast($number - BASE_NUMBER)) {
+        if (!empty($number) and $number > BASE_NUMBER and $serve = cwq_forecast($number - BASE_NUMBER)) {
             if ($serve->served) {
                 $result_html = $number.'号已经办理或已过号';
             } else {
