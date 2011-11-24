@@ -74,7 +74,7 @@ function cwq_is_serving($time = -1) {
         $time = time();
     }
 
-    return cwq_is_working($time) and !cwq_is_breaking();
+    return cwq_is_working($time) and !cwq_is_breaking($time);
 }
 
 
