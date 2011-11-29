@@ -221,44 +221,83 @@ class last_hour_oracle extends oracle {
     }
 }
 
-class yesterday_oracle extends oracle {
-    static public function forecast_serve_time($number, $at) {
+/**
+ * 从历史记录查询服务时间
+ *
+ * 只可用作基类
+ */
+class history_oracle extends oracle {
+    static protected function history_serve_time($number, array $params, $limit = 0) {
+        global $DB;
+
+        $select = 'current = :current';
+        foreach ($params as $key => $value) {
+            $select .= " AND $key = :$key";
+        }
+        $params['current'] = $number;
+
+        $rs = $DB->get_records_select('cwqueue_status', $select, $params, 'time, current DESC', '*', 0, $limit);
+
         $ret = new stdClass();
+        $ret->begin = 0x7fffffff;
+        $ret->end = 0;
+        foreach ($rs as $r) {
+            if ($r->time < $ret->begin) {
+                $ret->begin = $r->time;
+            }
+            if ($r->time > $ret->end) {
+                $ret->end = $r->time;
+            }
+        }
+
+        // 如果没有相关记录，就无效处理
+        if ($ret->end == 0) {
+            $ret->begin = 0;
+        }
+
+        return $ret;
+    }
+}
+
+class yesterday_oracle extends history_oracle {
+    static public function forecast_serve_time($number, $at) {
+        $ret = history_oracle::history_serve_time($number, array(), 1);
         $ret->name = '上一工作日';
 
         return $ret;
     }
 }
 
-class last_5_days_oracle extends oracle {
+class last_5_days_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
-        $ret = new stdClass();
+        $ret = history_oracle::history_serve_time($number, array(), 5);
         $ret->name = '最近五个工作日';
 
         return $ret;
     }
 }
 
-class last_30_days_oracle extends oracle {
+class last_30_days_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
-        $ret = new stdClass();
+        $ret = history_oracle::history_serve_time($number, array(), 30);
         $ret->name = '最近30个工作日';
 
         return $ret;
     }
 }
 
-class weekday_in_history_oracle extends oracle {
+class weekday_in_history_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
-        $ret = new stdClass();
-        $ret->name = '史上星期'.date('N', $at);
+        $weekday = date('N', $at);
+        $ret = history_oracle::history_serve_time($number, array('dayofweek'=>$weekday));
+        $ret->name = '史上星期'.$weekday;
 
         return $ret;
     }
 }
 
 
-class monthday_in_history_oracle extends oracle {
+class monthday_in_history_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
         $ret = new stdClass();
         $ret->name = '史上'.date('j', $at).'日';
@@ -267,7 +306,7 @@ class monthday_in_history_oracle extends oracle {
     }
 }
 
-class today_in_history_oracle extends oracle {
+class today_in_history_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
         $ret = new stdClass();
         $ret->name = '历史上的今天';
