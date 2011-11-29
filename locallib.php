@@ -19,6 +19,11 @@ define('CURRENT_TIME_INTERVAL', 330);  // 判断当前时间用
 function cwq_vectorize_time($time) {
     $hour = date('G', $time);
     $minute = date('i', $time);
+
+    if (cwq_is_breaking($time)) {
+        $hour = 11;
+        $minute = 30;
+    }
     if (($hour == 13 and $minute >= 30) or $hour > 13) {
         $hour -= 2;
     }
