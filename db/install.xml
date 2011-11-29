@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/cwqueue/db" VERSION="20111123" COMMENT="XMLDB file for Moodle local/cwqueue"
+<XMLDB PATH="local/cwqueue/db" VERSION="20111129" COMMENT="XMLDB file for Moodle local/cwqueue"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -20,7 +20,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="time" UNIQUE="true" FIELDS="time" NEXT="year"/>
+        <INDEX NAME="time" UNIQUE="false" FIELDS="time" NEXT="year"/>
         <INDEX NAME="year" UNIQUE="false" FIELDS="year" PREVIOUS="time" NEXT="month"/>
         <INDEX NAME="month" UNIQUE="false" FIELDS="month" PREVIOUS="year" NEXT="day"/>
         <INDEX NAME="day" UNIQUE="false" FIELDS="day" PREVIOUS="month" NEXT="dayofweek"/>
