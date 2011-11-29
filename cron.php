@@ -53,14 +53,14 @@ if ($raw_data) {
     if ($current != 0 and $last != 0 and $last >= $current) {
         $r = new stdClass();
         $now = time();
-        $r->time = $now;
+        $r->time    = $now;
         $r->year    = date('Y', $now);
         $r->month   = date('N', $now);
         $r->day     = date('j', $now);
         $r->dayofweek = date('N', $now);
         $r->minutes = cwq_vectorize_time($now);
         $r->current = $current - BASE_NUMBER;
-        $r->last = $last - BASE_NUMBER;
+        $r->last    = $last - BASE_NUMBER;
         $DB->insert_record('cwqueue_status', $r);
     }
 }
