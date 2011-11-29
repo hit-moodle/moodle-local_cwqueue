@@ -70,13 +70,14 @@ if ($raw_data) {
         $last_record = $DB->get_records('cwqueue_status', array('year'=>$r->year, 'month'=>$r->month, 'day'=>$r->day), 'time DESC', '*', 0, 1);
         if (!empty($last_record)) {
             $last_record = reset($last_record);
-            for ($c = $last_record->current + 1; $c < $current; $c++) {
+            for ($c = $last_record->current + 1; $c <= $current; $c++) {
                 $r->current = $c;
                 $DB->insert_record('cwqueue_status', $r);
             }
+        } else {
+            $r->current = $current;
+            $DB->insert_record('cwqueue_status', $r);
         }
-        $r->current = $current;
-        $DB->insert_record('cwqueue_status', $r);
     }
 }
 
