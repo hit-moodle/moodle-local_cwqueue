@@ -48,10 +48,10 @@ class local_cwqueue_renderer extends plugin_renderer_base {
 
         // 今日统计
         $now = time();
-        if ($today = cwq_serve_statistics($now) and $lasthour = cwq_serve_statistics($now, 64)) {
+        if ($today = cwq_serve_statistics($now) and $lasthour = cwq_serve_statistics($now, 60)) {
             $interval = $today->endtime - $today->starttime;
             $hour_average = round($interval ? $today->count * 60 / $interval : 0);
-            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近".($lasthour->endtime-$lasthour->starttime)."分钟办理了{$lasthour->count}笔");
+            $output .= $this->box("今天平均每小时办理{$hour_average}笔，最近一小时办理了{$lasthour->count}笔");
         }
 
         return $output;
