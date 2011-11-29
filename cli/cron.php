@@ -40,5 +40,44 @@ define('CLI_SCRIPT', true);
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 require_once($CFG->libdir.'/clilib.php');      // cli only functions
 
-require_once($CFG->dirroot.'/local/cwqueue/cron.php');
+$CFG->debug = DEBUG_MINIMAL; // suppress debug info of download_file_content(). The source server is always down regulary
+
+require_once($CFG->libdir.'/filelib.php');
+require_once('../locallib.php');
+
+if (!cwq_is_serving()) {
+    die;
+}
+
+$cwc_url = 'http://cwc.hit.edu.cn/server.asp';
+
+$raw_data = download_file_content($cwc_url);
+if ($raw_data) {
+    $data = explode('#', $raw_data);
+    $current = $data[0] - BASE_NUMBER;
+    $last = $data[1] - BASE_NUMBER;
+    if ($current != 0 and $last != 0 and $last >= $current) {
+        $r = new stdClass();
+        $now = time();
+        $r->time    = $now;
+        $r->year    = date('Y', $now);
+        $r->month   = date('N', $now);
+        $r->day     = date('j', $now);
+        $r->dayofweek = date('N', $now);
+        $r->minutes = cwq_vectorize_time($now);
+        $r->last    = $last;
+
+        $last_record = $DB->get_records('cwqueue_status', array('year'=>$r->year, 'month'=>$r->month, 'day'=>$r->day), 'time DESC', '*', 0, 1);
+        if (!empty($last_record)) {
+            $last_record = reset($last_record);
+            for ($c = $last_record->current + 1; $c < $current; $c++) {
+                $r->current = $c;
+                $DB->insert_record('cwqueue_status', $r);
+            }
+        }
+        $r->current = $current;
+        $DB->insert_record('cwqueue_status', $r);
+    }
+}
+
 
