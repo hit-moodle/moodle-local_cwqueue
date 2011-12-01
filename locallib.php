@@ -169,7 +169,7 @@ function cwq_forecast($number, $at = -1) {
         $at = time();
     }
 
-    $oracles = array('last_hour_oracle', 'yesterday_oracle', 'last_5_days_oracle', 'last_30_days_oracle', 'weekday_in_history_oracle', 'monthday_in_history_oracle', 'today_in_history_oracle');
+    $oracles = array('last_hour_oracle', 'today_average_oracle', 'yesterday_oracle', 'last_5_days_oracle', 'last_30_days_oracle', 'weekday_in_history_oracle', 'monthday_in_history_oracle', 'today_in_history_oracle');
 
     $ret = new stdClass();
     $ret->forecasts = array();
@@ -199,13 +199,17 @@ class oracle {
     }
 }
 
-class last_hour_oracle extends oracle {
+/**
+ * 根据今日记录预测服务时间
+ *
+ * 只可用作基类
+ */
+class today_oracle extends oracle {
 
-    static public function forecast_serve_time($number, $at) {
+    static public function today_serve_time($number, $at, $back) {
         $ret = new stdClass();
-        $ret->name = '最近一小时';
 
-        if (!$lasthour = cwq_serve_statistics($at, 60)) {
+        if (!$lasthour = cwq_serve_statistics($at, $back)) {
             return $ret;
         }
         if ($lasthour->endtime == $lasthour->starttime) {  // Can not calc speed
@@ -216,6 +220,26 @@ class last_hour_oracle extends oracle {
         $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed;
         $ret->begin = cwq_actual_time($minutes - 15, $at);
         $ret->end = cwq_actual_time($minutes + 15, $at);
+
+        return $ret;
+    }
+}
+
+class last_hour_oracle extends today_oracle {
+
+    static public function forecast_serve_time($number, $at) {
+        $ret = parent::today_serve_time($number, $at, 60);
+        $ret->name = '最近一小时处理速度';
+
+        return $ret;
+    }
+}
+
+class today_average_oracle extends today_oracle {
+
+    static public function forecast_serve_time($number, $at) {
+        $ret = parent::today_serve_time($number, $at, 1440);
+        $ret->name = '今日平均处理速度';
 
         return $ret;
     }
