@@ -61,7 +61,7 @@ if ($raw_data) {
         $now = time();
         $r->time    = $now;
         $r->year    = date('Y', $now);
-        $r->month   = date('N', $now);
+        $r->month   = date('n', $now);
         $r->day     = date('j', $now);
         $r->dayofweek = date('N', $now);
         $r->minutes = cwq_vectorize_time($now);

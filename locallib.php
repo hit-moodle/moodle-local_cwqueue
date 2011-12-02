@@ -126,7 +126,7 @@ function cwq_serve_statistics($until, $back = 1440) {
     global $DB;
 
     $params['year']     = date('Y', $until);
-    $params['month']    = date('N', $until);
+    $params['month']    = date('n', $until);
     $params['day']      = date('j', $until);
     $params['tominutes'] = cwq_vectorize_time($until);
     $params['fromminutes'] = $params['tominutes'] - $back > 0 ? $params['tominutes'] - $back : 0;
