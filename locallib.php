@@ -192,7 +192,7 @@ class oracle {
      *
      * @param number - 排号
      * @param at - 发起预测动作的时刻，也是要预测的日期
-     * @return object - $o->begin, 时间段起始时刻；$o->end, 时间段结束
+     * @return object - $o->begin, 时间段起始时刻（hh:mm）；$o->end, 时间段结束（hh:mm）
      */
     static public function forecast_serve_time($number, $at) {
         return null;
@@ -218,8 +218,8 @@ class today_oracle extends oracle {
 
         $speed = $lasthour->count / ($lasthour->endtime - $lasthour->starttime);
         $minutes = $lasthour->endtime + ($number - $lasthour->current) / $speed;
-        $ret->begin = cwq_actual_time($minutes - 15, $at);
-        $ret->end = cwq_actual_time($minutes + 15, $at);
+        $ret->begin = date('G:i', cwq_actual_time($minutes - 15, $at));
+        $ret->end = date('G:i', cwq_actual_time($minutes + 15, $at));
 
         return $ret;
     }
@@ -263,13 +263,13 @@ class history_oracle extends oracle {
         $rs = $DB->get_records_select('cwqueue_status', $select, $params, 'time, current DESC', '*', 0, $limit);
 
         $ret = new stdClass();
-        $ret->begin = 0x7fffffff;
+        $ret->begin = 1320940799; // 某日凌晨前一秒
         $ret->end = 0;
         foreach ($rs as $r) {
-            if ($r->time < $ret->begin) {
+            if (date('Gi', $r->time) < date('Gi', $ret->begin)) {
                 $ret->begin = $r->time;
             }
-            if ($r->time > $ret->end) {
+            if (date('Gi', $r->time) > date('Gi', $ret->end)) {
                 $ret->end = $r->time;
             }
         }
@@ -277,6 +277,9 @@ class history_oracle extends oracle {
         // 如果没有相关记录，就无效处理
         if ($ret->end == 0) {
             $ret->begin = 0;
+        } else {
+            $ret->begin = date('G:i', $ret->begin);
+            $ret->end = date('G:i', $ret->end);
         }
 
         return $ret;

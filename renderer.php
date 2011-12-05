@@ -108,7 +108,7 @@ class forecast_form extends moodleform {
                     $row = array();
                     $row[] = new html_table_cell($forecast->name);
                     if (!empty($forecast->begin) and !empty($forecast->end)) {
-                        $row[] = date('G:i', $forecast->begin).'-'.date('G:i', $forecast->end);
+                        $row[] = $forecast->begin.'-'.$forecast->end;
                     } else {
                         $row[] = 'N/A';
                     }
