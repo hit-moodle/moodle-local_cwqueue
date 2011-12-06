@@ -260,7 +260,7 @@ class history_oracle extends oracle {
         }
         $params['current'] = $number;
 
-        $rs = $DB->get_records_select('cwqueue_status', $select, $params, 'time, current DESC', '*', 0, $limit);
+        $rs = $DB->get_records_select('cwqueue_status', $select, $params, 'time DESC, current DESC', '*', 0, $limit);
 
         $ret = new stdClass();
         $ret->begin = 1320940799; // 某日凌晨前一秒
