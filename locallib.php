@@ -327,7 +327,7 @@ class weekday_in_history_oracle extends history_oracle {
 class monthday_in_history_oracle extends history_oracle {
     static public function forecast_serve_time($number, $at) {
         $ret = new stdClass();
-        $ret->name = '史上'.date('j', $at).'日';
+        $ret->name = '史上'.date('j', $at).'号';
 
         return $ret;
     }
